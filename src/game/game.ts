@@ -115,10 +115,10 @@ export class Game {
     this.match=newMatch(this.settings.side);this.active=true;this.paused=false;this.overlay='none';
     for(const a of this.actors){a.kills=a.deaths=0;a.money=800;a.alive=false;}
     this.prepareRound(true);this.ui.enter();this.ui.toast('行动开始 · 按 B 购买装备，按住 E 进行目标交互');
-    await this.audio.start();await this.lock();
+    const audioStarted=this.audio.start();await this.lock();await audioStarted;
   }
-  private async lock(){try{await this.canvas.requestPointerLock();}catch{this.pause();this.ui.toast('请点击「继续游戏」以启用鼠标控制');}}
-  async resume(){this.ui.close();this.overlay='none';this.paused=false;this.input.reset();await this.audio.start();await this.lock();}
+  private async lock(){this.canvas.focus();try{await this.canvas.requestPointerLock();}catch(error){console.warn('Mouse capture requires a focused game window:',error);this.pause();this.ui.toast('请激活游戏窗口，点击「继续游戏」以启用鼠标控制');}}
+  async resume(){this.ui.close();this.overlay='none';this.paused=false;this.input.reset();const audioStarted=this.audio.start();await this.lock();await audioStarted;}
   pause(){if(!this.active||this.match.phase==='finished')return;this.paused=true;this.overlay='pause';this.input.reset();if(document.pointerLockElement)document.exitPointerLock();this.ui.pause();}
   private toMenu(){this.active=false;this.paused=false;this.overlay='none';this.input.reset();document.exitPointerLock();this.ui.menu();this.effects.clear();}
   private openSettings(){this.paused=this.active;this.overlay='settings';this.input.reset();if(document.pointerLockElement)document.exitPointerLock();this.ui.settingsPanel();}
@@ -206,7 +206,6 @@ export class Game {
     if(this.composer&&this.settings.quality==='high')this.composer.render(dt);else this.renderer.render(this.scene,this.camera);
     if(this.active&&this.player.alive&&!this.scoped){this.renderer.clearDepth();this.renderer.render(this.viewScene,this.viewCamera);}
     if(this.active&&timestamp>this.hudAt){this.hudAt=timestamp+50;this.updateHUD();}
-    this.input.consume();
     if(import.meta.env.DEV&&this.active&&!this.paused){this.performanceSamples.push(rawDt*1000);if(this.performanceSamples.length>1800)this.performanceSamples.shift();}
   }
   private tick(dt:number){
@@ -228,6 +227,9 @@ export class Game {
     this.interact(dt);this.updateGrenades(dt);
     const win=checkWin(this.match,this.actors);if(win){if(this.match.phase==='planted'&&this.match.bomb.remaining<=0){const p=new THREE.Vector3().copy(this.match.bomb.position!);this.effects.explode(p);this.audio.explosion(p);for(const a of this.actors)if(a.alive&&a.position.distanceTo(p)<25)this.damage(a,120*(1-a.position.distanceTo(p)/30),null,false,'C4');}endRound(this.match,win.winner,win.reason,this.actors);}
     if(this.match.bomb.position){this.bombMesh.visible=true;this.bombMesh.position.copy(this.match.bomb.position);this.bombMesh.position.y+=.1;}else this.bombMesh.visible=false;
+    // Preserve events across render-only frames (e.g. 120 Hz rendering, 60 Hz simulation).
+    // Consume once after a simulation tick so quick clicks, look deltas and jumps are not lost.
+    this.input.consume();
   }
   private updatePlayer(dt:number){
     const a=this.player;
@@ -462,6 +464,13 @@ export class Game {
       const button=(name:string,action:()=>void)=>{const b=document.createElement('button');b.textContent=name;b.style.cssText='color:#ddd;background:#33402d;border:1px solid #657452;padding:5px;margin:2px;font:10px monospace';b.onclick=()=>{action();update();};panel.appendChild(b);};
       button('QA START',()=>{this.active=true;this.paused=true;this.overlay='none';this.match=newMatch('CT');this.prepareRound(true);this.ui.enter();});
       button('SIM 60',()=>debug.simulate(60));button('SIM 300',()=>debug.simulate(300));button('SNAPSHOT',()=>{});
+      button('TEST INPUT',()=>{
+        this.active=true;this.paused=false;this.match=newMatch('CT');this.prepareRound(true);this.match.phase='live';this.match.remaining=115;this.accumulator=0;
+        this.input.reset();const before=this.weapon(this.player).ammo;this.input.firePressed=true;
+        this.frame(this.last+8);const buffered=this.input.firePressed;
+        this.frame(this.last+9);const fired=this.weapon(this.player).ammo===before-1;
+        this.paused=true;this.last=performance.now();report.dataset.inputTest=buffered&&fired?'PASS':'FAIL';this.ui.toast('INPUT TEST '+report.dataset.inputTest);
+      });
       button('TEST COMBAT',()=>{
         this.active=true;this.paused=true;debug.setSide('T');debug.setPhase('live');
         for(const a of this.actors){a.alive=false;a.collider.setEnabled(false);}this.player.alive=true;

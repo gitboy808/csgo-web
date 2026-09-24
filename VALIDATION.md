@@ -16,6 +16,7 @@ Validated locally on 2026-09-24 with desktop Chrome on Apple M5 Pro (48 GiB RAM)
 - A direct Glock headshot consumed one round and eliminated its target.
 - A stone wall blocked AK damage entirely; a configured wooden crate allowed attenuated AK damage (target retained 22 health).
 - Menu, HUD, localized map labels, scoreboard, economy, planted-bomb countdown, death and spectator states were inspected in the browser.
+- Input is buffered across render-only frames, preserving fast clicks at 120 Hz while simulation runs at 60 Hz.
 
 ## Performance sample
 
