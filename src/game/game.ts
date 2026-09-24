@@ -49,6 +49,7 @@ export class Game {
   private recoil=0;private sway=new THREE.Vector2();private muzzleUntil=0;private flashLight=new THREE.PointLight(0xffc37e,0,3);
   private scoped=false;private selectedGrenade:GrenadeId|null=null;private bombSelected=false;private grenadeCooldown=0;
   private bombMesh=new THREE.Group();private drops:Drop[]=[];private interactionActor:number|null=null;private interactionTime=0;private interactionLabel='';
+  private heldBomb=new THREE.Group();private heldGrenade=new THREE.Group();
   private lastBeep=0;private spectator=1;private bombPlan:'A'|'B'='A';private menuTime=0;
   private targetSightings=new Map<number,number>();private performanceSamples:number[]=[];
   private composer:EffectComposer|null=null;private ao:SSAOPass|null=null;
@@ -102,7 +103,12 @@ export class Game {
     const body=new THREE.Mesh(new THREE.BoxGeometry(.32,.11,.22),new THREE.MeshStandardMaterial({color:0x62583b,roughness:.85}));this.bombMesh.add(body);
     const screen=new THREE.Mesh(new THREE.BoxGeometry(.1,.014,.06),new THREE.MeshStandardMaterial({color:0x83af7a,emissive:0x4b8b31,emissiveIntensity:1}));screen.position.set(0,.06,-.02);this.bombMesh.add(screen);
     for(let i=0;i<3;i++){const wire=new THREE.Mesh(new THREE.TorusGeometry(.07,.005,4,12,Math.PI),new THREE.MeshBasicMaterial({color:[0xc24122,0xc7ba6c,0x333c32][i]}));wire.rotation.x=Math.PI/2;wire.position.set(.02*i,.07,.02);this.bombMesh.add(wire);}
+    for(let row=0;row<3;row++)for(let col=0;col<3;col++){const key=new THREE.Mesh(new THREE.BoxGeometry(.018,.007,.018),new THREE.MeshStandardMaterial({color:0x2e3835,roughness:.6}));key.position.set(-.11+col*.023,.063,-.045+row*.026);this.bombMesh.add(key);}
     this.bombMesh.visible=false;this.scene.add(this.bombMesh);
+    this.heldBomb=this.bombMesh.clone(true);this.heldBomb.scale.setScalar(1.6);this.heldBomb.position.set(.05,-.21,-.55);this.heldBomb.rotation.x=.8;this.heldBomb.visible=false;this.viewScene.add(this.heldBomb);
+    const grenadeBody=new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.17,16),new THREE.MeshStandardMaterial({color:0x66714e,metalness:.3,roughness:.63}));this.heldGrenade.add(grenadeBody);
+    const pin=new THREE.Mesh(new THREE.TorusGeometry(.023,.003,5,14),new THREE.MeshStandardMaterial({color:0xb3b9ab,metalness:.8,roughness:.35}));pin.position.set(.02,.11,0);this.heldGrenade.add(pin);
+    const glove=new THREE.Mesh(new THREE.CapsuleGeometry(.06,.06,4,10),new THREE.MeshStandardMaterial({color:0x444d37,roughness:.96}));glove.position.set(.045,-.07,.025);this.heldGrenade.add(glove);this.heldGrenade.position.set(.22,-.23,-.51);this.heldGrenade.rotation.z=-.2;this.heldGrenade.visible=false;this.viewScene.add(this.heldGrenade);
   }
   async start(){
     if(!this.ui.ready)return;
@@ -130,14 +136,14 @@ export class Game {
     this.ui.buy(p,this.match.sides[0]);
   }
   private prepareRound(reset=false){
-    this.effects?.clear();for(const d of this.drops)this.scene.remove(d.mesh);this.drops=[];
+    this.effects?.clear();for(const d of this.drops){this.scene.remove(d.mesh);d.mesh.traverse(o=>{if(o instanceof THREE.Mesh)o.geometry.dispose();});}this.drops=[];
     this.interactionActor=null;this.interactionTime=0;this.selectedGrenade=null;this.scoped=false;this.bombSelected=false;this.recoil=0;this.bombMesh.visible=false;
     this.bombPlan=this.match.round%2?'A':'B';
     for(const a of this.actors){
       const side=this.match.sides[a.team],p=MAP.spawns[side][a.id%5],survived=a.alive&&!reset;
       if(reset||!survived){a.inventory=[createWeapon(side==='CT'?'usp':'glock'),createWeapon('knife')];a.armor=0;a.helmet=false;a.kit=false;a.grenades={he:0,flash:0,smoke:0};}
       if(reset)a.money=800;
-      if(a.model.side!==side){this.scene.remove(a.model.root);a.model=makeCharacter(side);this.scene.add(a.model.root);}
+      if(a.model.side!==side){this.scene.remove(a.model.root);a.model.root.traverse(o=>{if(o instanceof THREE.Mesh)o.geometry.dispose();});a.model=makeCharacter(side);this.scene.add(a.model.root);}
       a.position.set(p.x,p.y,p.z);a.body.setTranslation({x:p.x,y:p.y+.9,z:p.z},true);a.body.setNextKinematicTranslation({x:p.x,y:p.y+.9,z:p.z});a.collider.setEnabled(true);this.physics.resize(a.collider,false);
       a.alive=true;a.health=100;a.velocity.set(0,0,0);a.crouch=false;a.grounded=true;a.yaw=side==='CT'?Math.PI:0;a.pitch=0;
       a.target=null;a.lastSeen=null;a.memoryUntil=0;a.path=[];a.pathIndex=0;a.routeIndex=0;a.repathAt=0;a.senseAt=this.time+a.id*.015;a.stuckTime=0;a.reloadUntil=0;a.nextShot=0;a.flashUntil=0;a.shotCount=0;
@@ -146,6 +152,7 @@ export class Game {
       if(a.id!==0)this.equipBot(a);
       a.slot=a.inventory.find(w=>WEAPONS[w.id].slot===1)?.id||a.inventory.find(w=>WEAPONS[w.id].slot===2)!.id;
       a.model.torso.remove(a.model.weapon.root);
+      a.model.weapon.root.traverse(o=>{if(o instanceof THREE.Mesh)o.geometry.dispose();});
       a.model.weapon=makeWeapon(a.slot);
       a.model.weapon.root.position.set(.15,-.2,-.31);a.model.weapon.root.scale.setScalar(.83);a.model.torso.add(a.model.weapon.root);
       a.route=this.botRoute(a,side);a.lastPosition.copy(a.position);
@@ -186,7 +193,7 @@ export class Game {
   private reload(a:Pawn){const w=this.weapon(a);if(w.id==='knife'||a.reloadUntil||w.ammo===WEAPONS[w.id].magazine||w.reserve<=0)return;a.reloadUntil=this.time+WEAPONS[w.id].reload;a.shotCount=0;if(a.id===0){this.scoped=false;this.audio.reload();}}
   private drop(a:Pawn){const w=this.weapon(a);if(w.id==='knife')return;const model=makeWeapon(w.id);model.root.scale.setScalar(.8);model.root.rotation.set(Math.PI/2,.3,0);const position=a.position.clone().addScaledVector(direction(a.yaw),.7);position.y=heightAt(position.x,position.z)+.12;model.root.position.copy(position);this.scene.add(model.root);this.drops.push({position,weapon:{...w},mesh:model.root});if(a.alive){a.inventory=a.inventory.filter(i=>i!==w);this.setSlot(a,a.inventory[0].id);}}
   private frame(timestamp:number){
-    const dt=Math.min(.1,(timestamp-this.last)/1000);this.last=timestamp;this.frames++;this.fpsTime+=dt;
+    const rawDt=Math.max(.0001,(timestamp-this.last)/1000),dt=Math.min(.1,rawDt);this.last=timestamp;this.frames++;this.fpsTime+=rawDt;
     if(this.fpsTime>=.75){this.fps=Math.round(this.frames/this.fpsTime);this.frames=0;this.fpsTime=0;}
     if(this.active&&!this.paused&&this.match.phase!=='finished'){
       this.accumulator+=dt;
@@ -194,13 +201,13 @@ export class Game {
       this.effects.update(dt);
     }else{this.accumulator=0;if(!this.active)this.menuTime+=dt;}
     this.updateCamera(dt);
-    for(const a of this.actors){a.model.root.visible=a.id!==0||!this.active;if(this.active&&a.id===this.spectator&&!this.player.alive)a.model.root.visible=false;a.model.root.position.copy(a.position);a.model.root.rotation.y=a.yaw;animateCharacter(a.model,this.time,new THREE.Vector2(a.velocity.x,a.velocity.z).length()/5,a.crouch,a.alive,this.time-a.deathTime);a.model.weapon.muzzle.visible=a.alive&&this.time<a.nextShot-.06;}
+    for(const a of this.actors){a.model.root.visible=a.id!==0||!this.active;a.model.root.position.copy(a.position);a.model.root.rotation.y=a.yaw;animateCharacter(a.model,this.time,new THREE.Vector2(a.velocity.x,a.velocity.z).length()/5,a.crouch,a.alive,this.time-a.deathTime);a.model.weapon.muzzle.visible=a.alive&&this.time<a.nextShot-.06;}
     this.renderer.info.reset();this.renderer.shadowMap.needsUpdate=true;this.renderer.clear();
     if(this.composer&&this.settings.quality==='high')this.composer.render(dt);else this.renderer.render(this.scene,this.camera);
-    if(this.active&&this.player.alive&&!this.scoped&&!this.selectedGrenade&&!this.bombSelected){this.renderer.clearDepth();this.renderer.render(this.viewScene,this.viewCamera);}
+    if(this.active&&this.player.alive&&!this.scoped){this.renderer.clearDepth();this.renderer.render(this.viewScene,this.viewCamera);}
     if(this.active&&timestamp>this.hudAt){this.hudAt=timestamp+50;this.updateHUD();}
     this.input.consume();
-    if(import.meta.env.DEV&&this.active&&!this.paused){this.performanceSamples.push(dt*1000);if(this.performanceSamples.length>1800)this.performanceSamples.shift();}
+    if(import.meta.env.DEV&&this.active&&!this.paused){this.performanceSamples.push(rawDt*1000);if(this.performanceSamples.length>1800)this.performanceSamples.shift();}
   }
   private tick(dt:number){
     this.time+=dt;this.match.remaining=Math.max(0,this.match.remaining-dt);
@@ -397,11 +404,14 @@ export class Game {
     const p=this.player.alive?this.player:(this.actors[this.spectator]?.alive?this.actors[this.spectator]:this.player);
     const eye=this.eye(p);if(!this.player.alive&&!p.alive)eye.y+=2;
     this.camera.position.copy(eye);this.camera.rotation.order='YXZ';this.camera.rotation.set(p.pitch,p.yaw,0,'YXZ');
+    if(!this.player.alive){const back=direction(p.yaw).negate().add(new THREE.Vector3(0,.22,0)).normalize();const obstruction=this.physics.ray(eye,back,2.7);this.camera.position.addScaledVector(back,obstruction?Math.max(.2,obstruction.timeOfImpact-.15):2.7);this.camera.lookAt(eye.clone().addScaledVector(direction(p.yaw,p.pitch),7));}
     this.camera.fov=THREE.MathUtils.lerp(this.camera.fov,this.scoped?25:80,Math.min(1,dt*18));this.camera.updateProjectionMatrix();
     this.audio.position.copy(eye);this.audio.yaw=p.yaw;
     this.recoil=THREE.MathUtils.lerp(this.recoil,0,Math.min(1,dt*13));
     const a=this.player,model=this.currentView,moving=Math.min(1,Math.hypot(a.velocity.x,a.velocity.z)/5),bob=Math.sin(this.time*10)*moving;
+    this.heldBomb.visible=this.bombSelected;this.heldGrenade.visible=!!this.selectedGrenade;
     if(model){
+      model.root.visible=!this.bombSelected&&!this.selectedGrenade;
       const ratio=a.reloadUntil?1-(a.reloadUntil-this.time)/WEAPONS[a.slot].reload:0;
       const reload=Math.sin(ratio*Math.PI),wall=this.physics.ray(this.eye(a),direction(a.yaw,a.pitch),1.3);
       model.root.position.set(.21+bob*.008-this.sway.x,-.21+Math.abs(bob)*.007-this.recoil*.6-reload*.15,-.34+this.recoil+(wall?(1.3-wall.timeOfImpact)*.15:0));
@@ -452,16 +462,29 @@ export class Game {
       const button=(name:string,action:()=>void)=>{const b=document.createElement('button');b.textContent=name;b.style.cssText='color:#ddd;background:#33402d;border:1px solid #657452;padding:5px;margin:2px;font:10px monospace';b.onclick=()=>{action();update();};panel.appendChild(b);};
       button('QA START',()=>{this.active=true;this.paused=true;this.overlay='none';this.match=newMatch('CT');this.prepareRound(true);this.ui.enter();});
       button('SIM 60',()=>debug.simulate(60));button('SIM 300',()=>debug.simulate(300));button('SNAPSHOT',()=>{});
+      button('TEST COMBAT',()=>{
+        this.active=true;this.paused=true;debug.setSide('T');debug.setPhase('live');
+        for(const a of this.actors){a.alive=false;a.collider.setEnabled(false);}this.player.alive=true;
+        const target=this.actors[5];
+        const shot=(x:number,z:number,tx:number,tz:number,id:WeaponId)=>{
+          this.player.position.set(x,heightAt(x,z),z);this.player.yaw=this.player.pitch=0;this.player.nextShot=0;this.player.reloadUntil=0;this.player.shotCount=0;this.player.inventory=[createWeapon(id),createWeapon('knife')];this.player.slot=id;
+          target.alive=true;target.health=100;target.armor=0;target.helmet=false;target.position.set(tx,heightAt(tx,tz),tz);target.inventory=[createWeapon('usp'),createWeapon('knife')];target.slot='usp';
+          this.shoot(this.player);return {health:target.health,ammo:this.weapon(this.player).ammo};
+        };
+        const direct=shot(-5,10,-5,-5,'glock'),blocked=shot(50,-38,50,-58,'ak47'),wood=shot(-8,0,-8,-12,'ak47');
+        const pass=direct.health===0&&direct.ammo===19&&blocked.health===100&&wood.health>0&&wood.health<100;
+        report.dataset.combatTest=JSON.stringify({status:pass?'PASS':'FAIL',direct,blocked,wood});this.ui.toast('COMBAT TEST '+(pass?'PASS':'FAIL'));
+      });
       button('TEST BOMB',()=>{
         debug.setSide('T');debug.setPhase('live');for(const a of this.actors.slice(1))a.alive=false;
-        this.actors[5].alive=true;this.actors[5].body.setTranslation({x:8,y:.9,z:-58},true);
+        this.actors[5].alive=true;this.actors[5].position.set(-45,0,-40);this.actors[5].body.setTranslation({x:-45,y:.9,z:-40},true);this.actors[5].flashUntil=this.time+1000;
         debug.teleport(43,-37);this.physics.world.step();debug.key('KeyE',true);debug.simulate(1.5);debug.key('KeyE',false);debug.simulate(.1);
         if(this.match.bomb.interaction!==0)throw new Error('Plant cancellation failed');
         debug.key('KeyE',true);debug.simulate(3.3);debug.key('KeyE',false);
         const plant=this.match.phase==='planted';
-        debug.setSide('CT');debug.setPhase('live');this.match.phase='planted';this.match.bomb.position={x:43,y:4,z:-37};this.match.bomb.remaining=40;
+        debug.setSide('CT');debug.setPhase('live');this.match.phase='planted';this.match.bomb.carrier=null;this.match.bomb.site='A';this.match.bomb.plantedAt=this.time;this.match.bomb.position={x:43,y:4,z:-37};this.match.bomb.remaining=40;
         this.player.kit=true;debug.teleport(43,-37);this.physics.world.step();debug.key('KeyE',true);debug.simulate(5.2);debug.key('KeyE',false);
-        report.dataset.bombTest=plant&&this.match.phase==='end'&&this.match.winner===0?'PASS':'FAIL';
+        report.dataset.bombTest=plant&&(this.match.phase as string)==='end'&&this.match.winner===0?'PASS':'FAIL';
         this.ui.toast('BOMB TEST '+report.dataset.bombTest);
       });
       button('PLAY BENCH',()=>{this.active=true;this.paused=false;this.overlay='none';this.match=newMatch('CT');this.prepareRound(true);this.ui.enter();this.match.phase='live';this.match.remaining=115;this.performanceSamples=[];});
