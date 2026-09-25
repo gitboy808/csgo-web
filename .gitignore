@@ -1,7 +1,45 @@
+# Node.js dependencies and frontend build/cache output
 node_modules/
-dist/
-.DS_Store
-test-results/
-playwright-report/
-artifacts/
+/.pnpm-store/
+/dist/
+/.vite/
+/.vitest/
+*.tsbuildinfo
+
+# Local environment configuration; keep distributable examples
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local CS2 downloads, converted resources and conversion toolchains
+/local-assets/
+/public/assets/source2/
+/.local-tools/
+
+# Python and .NET conversion output
+__pycache__/
+*.py[cod]
+/.venv/
+/scripts/source2-helper/bin/
+/scripts/source2-helper/obj/
+
+# Test reports, captures and logs
+/coverage/
+/test-results/
+/playwright-report/
+/artifacts/
 *.log
+/exceptions.txt
+
+# Editor and operating-system files
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
