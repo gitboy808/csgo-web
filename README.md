@@ -1,66 +1,84 @@
-# DUST II — 回到尘土之中
+# DUST II — 本地网页演练
 
-一个可在浏览器中直接游玩的 3D 战术射击游戏。玩家和 4 名友方 AI 对抗 5 名敌方 AI，在独立重建的 Dust II 风格地图中进行 MR12 爆破比赛。
+桌面键鼠操作的 3D FPS：玩家与 4 名队友机器人对抗 5 名敌方机器人，进行 MR12 爆破比赛。仅使用本机 CS2 原始 Dust II、角色、武器和音频资源；游戏规则、机器人、物理和 Three.js 呈现由本项目实现。
 
-**独立致敬作品，与 Valve 无关联。** 地图、角色、武器由代码重新制作；这不是 CS2 官方地图文件、官方游戏移植或像素级复刻。布局和画面属于针对浏览器的独立近似重建。
+这是独立本地演练项目，与 Valve 无关联。原始素材仅保留在本机，不随源码进入公开仓库。渲染、混音和物理行为不是完整的 Source 2 引擎。
 
-## 游玩
+## 启动
 
-使用开启硬件加速的桌面 Chrome 或 Edge，点击「进入战场」后允许鼠标锁定。无需账号或额外服务器。所有对局在本地浏览器中执行。
+本文命令默认在项目根目录执行。
 
-| 操作 | 按键 |
-| --- | --- |
-| 移动 / 瞄准 / 射击 | WASD / 鼠标 / 左键 |
-| 跳跃 / 蹲伏 / 静步 | Space / Ctrl 或 C / Shift |
-| 换弹 / 买枪 | R / B |
-| 主武器 / 手枪 / 匕首 | 1 / 2 / 3 |
-| 切换投掷物 / 投掷 | 4 / 左键 |
-| 选择 C4 / 丢弃当前武器或 C4 | 5 / G |
-| 拾取 / 按住安装或拆除 | E |
-| AWP 狙击镜 | 右键 |
-| 计分板 / 暂停 | Tab / Esc |
-| 阵亡后切换观战队友 | 左键 |
-
-先赢 13 回合获胜，12 回合后换边，12:12 平局。准备时间 15 秒，攻防时间 115 秒，炸弹 40 秒爆炸。安装需要 3.2 秒，拆除需要 10 秒，拆弹工具缩短至 5 秒。停止交互、离开范围或死亡会取消进度。准备阶段只在出生区可以买枪。
-
-包含 AK-47、M4A1-S、AWP、Glock-18、USP-S、Desert Eagle、M9 匕首与三种投掷物。友军枪击伤害关闭；高爆手雷和 C4 会造成范围伤害。步枪能穿透一层指定木质掩体，造成衰减伤害。规则、经济和枪械参数为此独立游戏的固定配置，并非完整 CS2 参数模拟。
-
-## 本地开发
-
-需要 Node.js 22.12+，使用项目指定的 pnpm 11。
+开发环境使用 Node.js 22.12+ 与项目指定的 pnpm 11：
 
 ```sh
 corepack enable
 pnpm install
-pnpm run assets
+pnpm check:assets
 pnpm dev
 ```
 
-```sh
-pnpm test
-pnpm run build
-pnpm preview
-```
+打开 [本地页面](http://localhost:5173/)，点击“进入战场”启用鼠标锁定与音频。也可双击 [start-local.command](start-local.command)。主页提供地图浏览、枪械训练、投掷物训练和音乐盒试听。
 
-生产环境默认路径是 `/csgo-web/`，预览时访问该路径。其他托管路径可用 `BASE_PATH=/ pnpm run build` 覆盖。
+项目只使用原始 CS2 资源，不需要配置 `VITE_MAP`。源码仓库不含这些素材；已有本机原始资源的重建步骤见 [LOCAL_CS2.md](docs/LOCAL_CS2.md)。素材不完整时检查和构建会报错。首次启动需要加载模型、解码音效和预热着色器，开始按钮出现后再进入对局。
 
-## 实现
+## 操作
 
-- Three.js WebGL2：PBR 材质、太阳阴影、SSAO、独立第一人称武器场景、区域合批。
-- Rapier：固定 60 Hz 角色碰撞、斜坡、自动跨步、跳跃与射线遮挡。
-- Recast：构建时生成导航网格；AI 具有视线和声音感知、反应延迟、射击误差及攻守目标。
-- TypeScript：地图、枪械、经济、回合与炸弹状态相互分离。
-- Web Audio：本地合成枪声、脚步、弹着点、换弹与炸弹音效，不请求远程音频。
-- 设置存储在 localStorage；不收集玩家数据，不包含联网对战或遥测。
+| 操作 | 按键 |
+| --- | --- |
+| 移动 / 瞄准 / 射击 | WASD / 鼠标 / 左键 |
+| 跳跃 / 蹲伏 / 静步 | Space / Ctrl / Shift |
+| 换弹 / 购买菜单 | R / B |
+| 主武器 / 手枪 / 匕首 | 1 / 2 / 3 |
+| 切换投掷物 | 4 |
+| HE / 闪光 / 烟雾 / 诱饵 / 燃烧 | 6 / 7 / 8 / 9 / 0 |
+| 投掷 | 左键长抛、右键短抛、双键中抛；松手投出 |
+| 选择 C4 / 丢弃装备 | 5 / G；匕首不能丢弃 |
+| 安装 C4 | 包点内长按 E，或持 C4 时长按左键 |
+| 拆弹 / 替换地面同槽武器 | E |
+| AWP 两段开镜 / Glock 三连发切换 | 右键 |
+| 检视枪械或 C4 | F |
+| 无线电：战术 / 战况 / 回应 | Z / X / C |
+| 计分板 / 暂停 | Tab / Esc |
+| 阵亡后轮换观战 / 选择队友 / 接管 | 左右键 / 1–5 / E |
+| 训练武器库 / 循环选择 | B / [ 和 ] |
 
-修改地图后运行 `pnpm run assets` 更新导航数据。`pnpm run build` 会自动更新并执行类型检查。测试覆盖经济、装填、伤害、判胜优先级、换边、地图连通和实际物理碰撞。
+空武器槽、可携带的投掷物、CT 拆弹工具和 T 的掉落 C4 支持接近自动拾取。自动拾取不替换同槽装备，也不强制切走当前武器；枪内弹药与备弹保持原值。
 
-## GitHub Pages
+## 对局规则
 
-仓库 Settings → Pages → Source 选择 **GitHub Actions**。推送到 `main` 后自动构建、测试并部署。工作流仅需要内置 `GITHUB_TOKEN`，不需要个人 Token 或其他秘密配置。
+先赢 13 回合获胜，第 12 回合后换边，12:12 平局。准备阶段 **3 秒**，回合 115 秒，炸弹倒计时 40 秒。安装 3.2 秒，拆除 10 秒，有工具时 5 秒；离开范围、停止交互或死亡会中断进度。
 
-## 素材
+准备阶段可在出生区域购买，打开本地购买菜单会暂停对局。支持退款、自动购买、重购和购买投掷。
 
-见 [ASSETS.md](ASSETS.md)。全部运行资源随项目发布；纹理来源、下载 URL 与校验值见 `public/assets/materials.json`。可运行 `python3 scripts/fetch-textures.py` 重建纹理目录。
+友伤与存活人物碰撞已开启。队友承受子弹伤害的 33%、手雷的 85%、其他伤害的 40%，误杀扣 $300。指定木质掩体可被步枪穿透。死亡后可接管存活机器人，保留其位置、血量和装备；下一回合恢复原始玩家。
 
-字体使用 Barlow / Barlow Condensed（SIL Open Font License），通过 Fontsource 本地打包。地图名称和相关游戏名称属于其各自权利人。
+包含 7 种枪械/近战装备、6 类投掷物与 11 套原始音乐盒。枪械数据取自固定版本原始资源；后坐力、移动、弹道、掉落和混音仍有浏览器适配。
+
+## 检查与构建
+
+    pnpm check:architecture
+    pnpm check:assets
+    pnpm typecheck
+    pnpm test
+    pnpm build
+    pnpm preview
+
+构建使用根路径 `/`，包含类型和资源检查；`pnpm preview` 预览当前产物。GitHub Actions 只运行源码类型检查与测试，不再自动构建或发布原始素材。架构命令仅做只读盘点。
+
+项目结构、模块职责和扩展顺序见 [ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)，当前自动检查与浏览器验收入口见 [VALIDATION.md](docs/VALIDATION.md)。
+
+## 实现与素材记录
+
+| 领域 | 说明 |
+| --- | --- |
+| 地图、场景修正与重建 | [LOCAL_CS2.md](docs/LOCAL_CS2.md) |
+| 枪械与角色 | [LOCAL_WEAPONS.md](docs/LOCAL_WEAPONS.md)、[LOCAL_CHARACTERS_RADIO.md](docs/LOCAL_CHARACTERS_RADIO.md) |
+| HUD、移动、脚步与接管 | [LOCAL_HUD_MOVEMENT.md](docs/LOCAL_HUD_MOVEMENT.md) |
+| C4、掉落、拾取与预热 | [LOCAL_C4_LOOT.md](docs/LOCAL_C4_LOOT.md) |
+| 投掷物 | [LOCAL_GRENADES.md](docs/LOCAL_GRENADES.md)、[GRENADE_RESEARCH.md](docs/GRENADE_RESEARCH.md) |
+| 购买与音频 | [LOCAL_BUY_MENU.md](docs/LOCAL_BUY_MENU.md)、[LOCAL_HIT_AUDIO_MUSIC.md](docs/LOCAL_HIT_AUDIO_MUSIC.md) |
+| 性能与来源 | [PERFORMANCE.md](docs/PERFORMANCE.md)、[ASSETS.md](ASSETS.md) |
+
+使用 Three.js / WebGL2、Rapier、TypeScript，导航来自原始 Source 2 数据。脚步、C4、枪械、命中、无线电与音乐均使用本机原始资源；画面、物理及部分环境反馈仍由浏览器适配。
+
+设置保存在 localStorage。没有联网对战或遥测。字体 Barlow / Barlow Condensed 通过 Fontsource 本地打包，采用 SIL Open Font License。
