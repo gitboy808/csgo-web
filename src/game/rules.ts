@@ -1,13 +1,13 @@
 import type { Combatant, MatchState, Side, Team, WeaponId } from './types';
 import { createWeapon, WEAPONS } from './weapons';
 
-export const RULES = { freeze: 15, live: 115, bomb: 40, plant: 3.2, defuse: 10, kitDefuse: 5, end: 6, maxMoney: 16000 };
+export const RULES = { freeze: 3, live: 115, bomb: 40, plant: 3.2, defuse: 10, kitDefuse: 5, end: 6, maxMoney: 16000 };
 export function newMatch(side: Side = 'CT'): MatchState {
   return { phase: 'freeze', round: 1, score: [0, 0], sides: [side, side === 'CT' ? 'T' : 'CT'], remaining: RULES.freeze,
     bomb: freshBomb(), winner: null, reason: '', lossStreak: [0, 0] };
 }
-export function freshBomb(): MatchState['bomb'] {
-  return { carrier: null, position: null, site: null, plantedAt: null, remaining: RULES.bomb, interaction: 0, interactingActor: null };
+function freshBomb(): MatchState['bomb'] {
+  return { carrier: null, position: null, site: null, remaining: RULES.bomb, interaction: 0, interactingActor: null };
 }
 export function teamForSide(state: MatchState, side: Side): Team { return state.sides[0] === side ? 0 : 1; }
 export function checkWin(state: MatchState, actors: Combatant[]): { winner: Team; reason: string } | null {
@@ -45,11 +45,17 @@ export function nextRound(state: MatchState): 'next' | 'halftime' | 'finished' {
 export function canBuy(state: MatchState, actor: Combatant, inBuyZone: boolean) {
   return actor.alive && state.phase === 'freeze' && inBuyZone;
 }
+export type EquipmentId='armor'|'helmet'|'kit';
+export function equipmentPrice(actor:Combatant,item:EquipmentId){
+  if(item==='kit')return 400;
+  if(item==='armor'||actor.helmet)return 650;
+  return actor.armor===100?350:1000;
+}
 export function purchase(state: MatchState, actor: Combatant, item: WeaponId | 'armor' | 'helmet' | 'kit', inBuyZone: boolean): boolean {
   if (!canBuy(state, actor, inBuyZone)) return false;
   const side = state.sides[actor.team];
   if (item === 'armor' || item === 'helmet' || item === 'kit') {
-    const cost = item === 'armor' ? 650 : item === 'helmet' ? 1000 : 400;
+    const cost = equipmentPrice(actor,item);
     if (actor.money < cost || (item === 'kit' && (side !== 'CT' || actor.kit)) || (item === 'armor' && actor.armor === 100) || (item === 'helmet' && actor.armor === 100 && actor.helmet)) return false;
     actor.money -= cost;
     if (item === 'kit') actor.kit = true;

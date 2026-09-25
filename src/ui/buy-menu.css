@@ -1,0 +1,86 @@
+.overlay.buy-overlay{padding:0;background:none;backdrop-filter:none;overflow:hidden}
+.buy-menu{--buy-accent:#dfca87;--buy-text:#d9d9d7;position:fixed;inset:0;overflow:hidden;color:var(--buy-text);font-family:'Barlow',Arial,'PingFang SC','Microsoft YaHei',sans-serif;text-shadow:0 1px 2px #0008;background:#20232680;isolation:isolate;user-select:none;contain:layout style}
+.buy-menu[data-side=CT]{--buy-accent:#b4cedf}
+.buy-scene-shade{position:absolute;inset:0;z-index:-1;backdrop-filter:blur(9px) saturate(.3);background:linear-gradient(90deg,#16181bec 0%,#202225db 52%,#1d1f22b5 79%,#151719df),radial-gradient(ellipse at 77% 35%,#76808766,transparent 57%)}
+.buy-team-title{position:absolute;top:5vh;left:6.1vw;display:flex;align-items:center;gap:14px;font-size:clamp(14px,1.24vw,22px);font-weight:500;color:var(--buy-accent);letter-spacing:2px}
+.buy-team-logo{width:40px;height:40px;background:currentColor;mask:var(--icon) center/contain no-repeat;-webkit-mask:var(--icon) center/contain no-repeat;opacity:.9}
+.buy-layout{display:grid;grid-template-columns:minmax(0,2.16fr) minmax(270px,1fr);gap:24px;width:min(89vw,1620px);margin:16vh auto 0;position:relative}
+.buy-left{min-width:0;z-index:2}
+.buy-info{display:grid;grid-template-columns:minmax(70px,.65fr) auto 1fr;align-items:center;gap:12px;padding:7px 13px;background:#080a0c9e;min-height:42px;margin-bottom:4px;box-shadow:0 1px 0 #ffffff04;font-size:clamp(10px,.94vw,16px)}
+.buy-info>strong{font:600 clamp(21px,1.8vw,31px) 'Barlow Condensed',sans-serif;color:#dcc887;letter-spacing:.5px}
+.buy-info>div{color:#aaaeb1;white-space:nowrap}
+.buy-info>div b{color:#ececea;font:600 clamp(19px,1.5vw,26px) 'Barlow Condensed',sans-serif;letter-spacing:1px;margin-left:9px}
+.buy-info>span{text-align:right;font-size:clamp(9px,.8vw,14px);color:#bfc291}
+.buy-info>span b{font-weight:600;white-space:nowrap}
+.buy-grid{display:grid;grid-template-columns:18fr 18fr 22fr 24fr 18fr;background:#090b0dcc;border:1px solid #ffffff06;padding:5px 7px 12px;gap:0}
+.buy-column{min-width:0;padding:0 8px}
+.buy-column h2{position:relative;display:flex;align-items:center;justify-content:center;margin:0;height:40px;font-size:clamp(13px,1.2vw,20px);font-weight:600;letter-spacing:.5px;color:#e4e4e2;white-space:nowrap}
+.buy-column h2 kbd{position:absolute;left:0;top:12px;color:#888d90;font:400 11px 'Barlow',sans-serif}
+.buy-column.key-selected h2{color:var(--buy-accent);text-shadow:0 0 10px #ffffff40}
+.buy-column-items{display:grid;grid-template-rows:repeat(5,clamp(58px,8.9vh,108px));gap:7px}
+.buy-cell{position:relative;min-width:0;border-radius:4px}
+.buy-card{display:block;width:100%;height:100%;position:relative;text-align:left;background:radial-gradient(ellipse at center,#91919129,#65656523);border:1px solid transparent;border-radius:4px;padding:5px 9px;color:var(--buy-accent);outline:0;transition:background-color 90ms ease;contain:layout paint}
+.buy-card:focus-visible{outline:1px solid #eee;outline-offset:2px}
+.buy-cell.selected .buy-card{background-color:#a0a2a329;border-color:#b7b9b685;box-shadow:inset 0 0 12px #ffffff06}
+.buy-cell.owned .buy-card{border-color:#d7d8d391}
+.buy-cell.refundable .buy-card{border-color:#e6e8e3b0}
+.buy-key{position:absolute;top:6px;left:7px;font:400 clamp(10px,.85vw,15px) 'Barlow Condensed',sans-serif;color:#aaa9a37d}
+.buy-item-name{position:absolute;top:6px;right:7px;left:21px;text-align:right;font-size:clamp(9px,.87vw,15px);font-weight:500;line-height:1.1;max-height:2.2em;overflow:hidden}
+.buy-item-icon{display:block;position:absolute;left:12%;right:12%;top:27%;bottom:21%;background:currentColor;mask:var(--icon) center/contain no-repeat;-webkit-mask:var(--icon) center/contain no-repeat;filter:drop-shadow(0 2px 1px #0002)}
+.buy-column:first-child .buy-item-icon{left:22%;right:22%;top:23%;bottom:22%}
+.buy-column:last-child .buy-item-icon{left:28%;right:28%;top:22%;bottom:21%}
+.buy-item-price{position:absolute;bottom:5px;right:8px;font:500 clamp(11px,.97vw,17px) 'Barlow Condensed',sans-serif;letter-spacing:.3px}
+.buy-count{position:absolute;left:8px;bottom:5px;font-size:10px;color:#dcded9;opacity:.85}
+.buy-cell.refundable .buy-count{left:32px}
+.buy-team-pips{position:absolute;display:flex;gap:3px;left:50%;bottom:6px;transform:translateX(-50%)}
+.buy-team-pips i{width:3px;height:3px;border-radius:50%;background:#ffffff18}
+.buy-team-pips i.has-item{background:#dddccdb3;box-shadow:0 0 3px #ffffff26}
+.buy-cell.cannot-buy .buy-card{color:#777b7c;background-color:#25262824}
+.buy-cell.cannot-buy .buy-item-icon{opacity:.56}
+.buy-cell.cannot-buy .buy-item-price{color:#8c8d87}
+.buy-cell.owned .buy-item-icon{opacity:.83;color:#9ca7a7}
+.buy-cell.owned .buy-item-name{color:#b7bcb9}
+.buy-refund{position:absolute;left:5px;bottom:1px;z-index:2;border:0;background:none;padding:0;width:27px;height:26px;font:29px Arial;line-height:24px;color:#dddeda;opacity:.75}
+.buy-refund:hover,.buy-refund:focus-visible{opacity:1;color:#fff}
+.buy-refund[hidden]{display:none}
+.buy-menu .buy-refund{font-size:0}
+.buy-menu .buy-refund:before{content:'';display:block;width:22px;height:22px;background:currentColor;mask:var(--refund-icon) center/contain no-repeat;-webkit-mask:var(--refund-icon) center/contain no-repeat}
+.empty-cell{border:1px solid #ffffff02;background:#ffffff05;display:flex;align-items:center;justify-content:center;color:#737b812e;font-size:26px}
+.empty-cell small{position:absolute;bottom:7px;font-size:10px;color:#7b808047;letter-spacing:1px}
+.empty-cell .buy-key{opacity:.27}
+.buy-ground{position:relative;min-height:69px;padding:8px 12px;margin-top:5px;background:#080a0c70;border-top:1px solid #ffffff09}
+.buy-ground-label{position:absolute;bottom:7px;left:0;right:0;text-align:center;font-size:clamp(14px,1.5vw,27px);font-weight:500;letter-spacing:7px;color:#ffffff14;pointer-events:none}
+.buy-ground-items{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+.buy-ground-items button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:180px;max-width:29%;border:1px solid #ffffff0b;border-radius:2px;background:#303638a8;color:var(--buy-accent);padding:4px 8px;font:500 12px 'Barlow',sans-serif}
+.buy-ground-items button:hover{background:#535b5b94;border-color:#b9c0bd80}
+.buy-ground-items button span{display:inline-block;background:currentColor;width:52px;height:24px;mask:var(--icon) center/contain no-repeat;-webkit-mask:var(--icon) center/contain no-repeat}
+.buy-team-loadout{display:flex;gap:20px;align-items:center;padding:15px 3px;color:#979e9e;font-size:clamp(9px,.75vw,13px)}
+.buy-team-loadout>span{display:flex;align-items:center;gap:5px}
+.buy-team-loadout i{width:4px;height:4px;background:#a4adac;border-radius:50%;opacity:.7}
+.buy-right{position:relative;min-width:0;height:calc(80vh - 84px);z-index:1}
+.buy-portrait-stage{position:absolute;top:-13vh;left:-13%;right:-13%;height:76vh;max-height:910px;pointer-events:none}
+.buy-portrait{width:auto;height:auto;max-width:100%;max-height:100%;opacity:0;filter:drop-shadow(6px 7px 13px #0007);position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:2;transition:opacity 100ms}
+.buy-portrait.ready{opacity:1}
+.buy-portrait-halo{position:absolute;inset:5% 5% 15%;background:radial-gradient(ellipse,#7e868140,transparent 65%)}
+.buy-portrait-shadow{position:absolute;left:23%;right:19%;bottom:0;height:30px;border-radius:50%;background:#050505b3;filter:blur(12px)}
+.buy-item-info{position:absolute;bottom:64px;left:1%;right:1%;background:#080a0dba;padding:13px 17px;border-left:2px solid #8a979944;z-index:3;min-height:108px}
+.buy-item-info h3{font:600 clamp(20px,1.65vw,29px) 'Barlow Condensed','PingFang SC',sans-serif;margin:0 0 7px;color:#ededeb;letter-spacing:1px}
+.buy-item-info p{font-size:clamp(11px,.83vw,15px);line-height:1.75;color:#b5b9b8;margin:0 0 10px}
+.buy-item-info [data-status]{font-size:11px;color:var(--buy-accent);letter-spacing:.5px}
+.buy-item-info [data-status].unavailable{color:#bda996}
+.buy-carried{position:absolute;bottom:32px;left:1%;right:1%;color:#969e9e;font-size:11px;text-align:center}
+.buy-navbar{position:absolute;bottom:0;left:0;right:0;min-height:64px;display:flex;align-items:center;justify-content:flex-end;gap:25px;padding:10px 5.5vw;border-top:1px solid #ffffff0c;background:#121518a3;font-size:clamp(10px,.95vw,16px)}
+.buy-donate-hint{color:#a3a7a8;margin-right:auto;white-space:nowrap}
+.buy-menu kbd{font-family:'Barlow Condensed',sans-serif;font-size:1em;font-weight:500}
+.buy-navbar kbd{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 4px;border:1px solid #ffffff40;border-radius:2px;margin-right:5px;color:#ddd}
+.buy-footer-actions{display:flex;gap:6px;align-items:center}
+.buy-footer-actions button{border:1px solid transparent;background:transparent;padding:9px 12px;color:#d0d2cc;font:inherit;font-weight:500;white-space:nowrap}
+.buy-menu.donating .buy-donate-hint{color:var(--buy-accent)}
+.buy-footer-actions button:hover:not(:disabled){background:#ffffff0a;border-color:#ffffff19;color:#fff}
+.buy-footer-actions button:disabled{opacity:.3}
+.buy-feedback{position:absolute;bottom:85px;left:50%;transform:translateX(-50%);max-width:90vw;white-space:nowrap;font-size:12px;color:#dcd5bb;background:#1b1c1ed9;padding:7px 17px;border-radius:2px;pointer-events:none}
+.buy-feedback:empty{display:none}
+@media(max-width:1050px){.buy-layout{width:95vw;grid-template-columns:minmax(0,2.6fr) minmax(200px,1fr);gap:12px}.buy-column{padding:0 5px}.buy-column h2{font-size:13px}.buy-info{gap:6px;padding:7px}.buy-info>span{font-size:9px}.buy-navbar{padding:9px 2.5vw;gap:8px}.buy-footer-actions button{padding:7px}.buy-team-title{left:3vw}.buy-item-info{padding:11px}.buy-item-name{font-size:10px}.buy-team-loadout{gap:13px}}
+@media(max-height:720px){.buy-layout{margin-top:13vh}.buy-column h2{height:31px}.buy-column h2 kbd{top:9px}.buy-info{min-height:33px;padding-top:3px;padding-bottom:3px}.buy-ground{min-height:50px}.buy-team-loadout{padding-top:9px}.buy-navbar{min-height:50px}.buy-item-info{bottom:40px;min-height:92px}.buy-carried{bottom:18px}.buy-portrait-stage{top:-10vh;height:75vh}.buy-team-title{top:3vh}.buy-team-logo{width:30px;height:30px}}
+@media(max-width:760px){.buy-layout{grid-template-columns:1fr;width:96vw;margin-top:11vh}.buy-right{display:none}.buy-column{padding:0 4px}.buy-column-items{grid-template-rows:repeat(5,clamp(55px,9vh,83px));gap:5px}.buy-info>span{font-size:9px}.buy-info>div{font-size:10px}.buy-info>strong{font-size:22px}.buy-item-name{font-size:9px}.buy-column h2{font-size:12px}.buy-donate-hint{display:none}.buy-navbar{justify-content:center;padding:8px}.buy-footer-actions{width:100%;justify-content:space-between}.buy-footer-actions button{font-size:10px;padding:7px 4px}.buy-team-title{font-size:14px;top:3vh}.buy-team-logo{width:28px;height:28px}.buy-team-loadout{font-size:9px}.buy-info{grid-template-columns:55px auto 1fr}.buy-feedback{bottom:64px}}
+@media(prefers-reduced-motion:reduce){.buy-card,.buy-portrait{transition:none}}

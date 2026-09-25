@@ -1,0 +1,4 @@
+import sharp from 'sharp';import{writeFile}from'node:fs/promises';
+const images=[];for(let sequence=0;sequence<4;sequence++)for(let frame=0;frame<32;frame++){const file=`local-assets/grenades/vfx/fire_small_sim_b_seq${sequence}_${frame}.png`;images.push({input:await sharp(file).resize(128,128,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).toBuffer(),left:(frame%8)*128,top:(sequence*4+Math.floor(frame/8))*128});}
+await sharp({create:{width:1024,height:2048,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(images).webp({lossless:true,effort:6}).toFile('public/assets/source2/grenades/vfx/fire.webp');
+await writeFile('public/assets/source2/grenades/vfx/manifest.json',JSON.stringify({source:'materials/particle/fire_small_sim/fire_small_sim_b.vtex_c',texture:'fire.webp',columns:8,rows:16,sequences:4,framesPerSequence:32,tileSize:128}));console.log('Packed 128 original fire animation frames into one atlas.');

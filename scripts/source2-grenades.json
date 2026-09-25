@@ -1,0 +1,78 @@
+{
+  "models": {
+    "he": "weapons/models/grenade/hegrenade/weapon_hegrenade.vmdl_c",
+    "flash": "weapons/models/grenade/flashbang/weapon_flashbang.vmdl_c",
+    "smoke": "weapons/models/grenade/smokegrenade/weapon_smokegrenade.vmdl_c",
+    "molotov": "weapons/models/grenade/molotov/weapon_molotov.vmdl_c",
+    "incendiary": "weapons/models/grenade/incendiary/weapon_incendiarygrenade.vmdl_c",
+    "decoy": "weapons/models/grenade/decoy/weapon_decoy.vmdl_c"
+  },
+  "clips": {
+    "he": {
+      "idle": "animation/anims/viewmodel/grenade/grenade_hegrenade/idle_hegrenade.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/grenade_hegrenade/draw_hegrenade.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/grenade_hegrenade/pullpin_hegrenade.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/grenade_hegrenade/throwcharge_high_hegrenade.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/grenade_hegrenade/throwcharge_mid_hegrenade.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/grenade_hegrenade/throwcharge_low_hegrenade.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/grenade_hegrenade/throw_overhand_hegrenade.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/grenade_hegrenade/throw_underhand_hegrenade.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/grenade_hegrenade/lookat01_hegrenade.vnmclip_c"
+    },
+    "flash": {
+      "idle": "animation/anims/viewmodel/grenade/grenade_flashbang/idle_flashbang.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/grenade_flashbang/draw_flashbang.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/grenade_flashbang/pullpin_flashbang.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/grenade_flashbang/throwcharge_high_flashbang.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/grenade_flashbang/throwcharge_mid_flashbang.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/grenade_flashbang/throwcharge_low_flashbang.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/grenade_flashbang/throw_overhand_flashbang.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/grenade_flashbang/throw_underhand_flashbang.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/grenade_flashbang/lookat01_flashbang.vnmclip_c"
+    },
+    "smoke": {
+      "idle": "animation/anims/viewmodel/grenade/grenade_smokegrenade/idle_smoke.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/grenade_smokegrenade/draw_smoke.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/grenade_smokegrenade/pullpin_smoke.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/grenade_smokegrenade/throwcharge_high_smoke.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/grenade_smokegrenade/throwcharge_mid_smoke.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/grenade_smokegrenade/throwcharge_low_smoke.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/grenade_smokegrenade/throw_overhand_smoke.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/grenade_smokegrenade/throw_underhand_smoke.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/grenade_smokegrenade/lookat01_smoke.vnmclip_c"
+    },
+    "molotov": {
+      "idle": "animation/anims/viewmodel/grenade/grenade_molotov/idle_molotov.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/grenade_molotov/draw_molotov.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/grenade_molotov/pullpin_molotov.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/grenade_molotov/throwcharge_high_molotov.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/grenade_molotov/throwcharge_mid_molotov.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/grenade_molotov/throwcharge_low_molotov.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/grenade_molotov/throw_overhand_molotov.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/grenade_molotov/throw_underhand_molotov.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/grenade_molotov/lookat01_molotov.vnmclip_c"
+    },
+    "incendiary": {
+      "idle": "animation/anims/viewmodel/grenade/grenade_incendiary/idle_incendiary.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/grenade_incendiary/draw_incendiary.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/grenade_incendiary/pullpin_incendiary.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/grenade_incendiary/throwcharge_high_incendiary.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/grenade_incendiary/throwcharge_mid_incendiary.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/grenade_incendiary/throwcharge_low_incendiary.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/grenade_incendiary/throw_overhand_incendiary.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/grenade_incendiary/throw_underhand_incendiary.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/grenade_incendiary/lookat01_incendiary.vnmclip_c"
+    },
+    "decoy": {
+      "idle": "animation/anims/viewmodel/grenade/_default_grenade/idle_grenade.vnmclip_c",
+      "draw": "animation/anims/viewmodel/grenade/_default_grenade/draw_grenade.vnmclip_c",
+      "pullpin": "animation/anims/viewmodel/grenade/_default_grenade/pullpin_grenade.vnmclip_c",
+      "holdHigh": "animation/anims/viewmodel/grenade/_default_grenade/throwcharge_high_grenade.vnmclip_c",
+      "holdMid": "animation/anims/viewmodel/grenade/_default_grenade/throwcharge_mid_grenade.vnmclip_c",
+      "holdLow": "animation/anims/viewmodel/grenade/_default_grenade/throwcharge_low_grenade.vnmclip_c",
+      "throwHigh": "animation/anims/viewmodel/grenade/_default_grenade/throw_overhand_grenade.vnmclip_c",
+      "throwLow": "animation/anims/viewmodel/grenade/_default_grenade/throw_underhand_grenade.vnmclip_c",
+      "inspect": "animation/anims/viewmodel/grenade/_default_grenade/lookat01_grenade.vnmclip_c"
+    }
+  }
+}
